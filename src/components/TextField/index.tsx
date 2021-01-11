@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TextInput } from 'react-native';
+import { View, TextInput, TextInputProps } from 'react-native';
 import { makeStyles } from '../../hooks/makeStyles';
 
 const useStyles = makeStyles((theme) => ({
@@ -7,19 +7,22 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.textFieldTheme,
         width: 100,
         borderRadius: 25,
-    }
+    },
 }))
-const TextField = () => {
+
+const TextField: React.FunctionComponent<TextInputProps> = (props) => {
+    const { ...others } = props;
     const classes = useStyles();
 
     return (
         <View>
-            <TextInput style={classes.textFieldStyle}>
-
-            </TextInput>
+            <TextInput
+                style={classes.textFieldStyle}
+                {...others}
+            />
         </View>
-    )
-}
+    );
+};
 
-export default TextField
+export default TextField;
 

@@ -1,49 +1,71 @@
 import React from 'react';
-import { LinkingOptions, NavigationContainer } from '@react-navigation/native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text, Button } from 'react-native';
+
+//react navigation
+import { NavigationContainer, RouteProp } from '@react-navigation/native';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+//router
+import { linking } from './src/router';
+
+//interface
+import { RootStackParamList } from './src/interface'
+
+//components
+import TextField from './src/components/TextField'
+
+//hooks
 import useUser from './src/hooks/useUser';
-import { parse } from '@babel/core';
+import useNavigate from './src/hooks/useNavigate'
 
 const Drawer = createDrawerNavigator();
+const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator()
 
-const CPage = ({ navigation }) => {
+const CPage = () => {
+    const [itemID, setItemID] = React.useState('0')
+    const navigate = useNavigate();
+
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
+            <TextField
+                onChangeText={setItemID}
+                value={itemID}
+            />
             <Text>
                 C Page Content
             </Text>
-            <Button title="To I Page" onPress={() => navigation.navigate('IPage', {
-                itemID: 123
-            })} />
+            <Button title="To I Page" onPress={navigate(`/iroute/${itemID}`)} />
         </View>
     )
 }
 
-const DPage = ({ navigation }) => {
+const DPage = () => {
+    const navigate = useNavigate();
+
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
             <Text>
                 D Page Content
             </Text>
-            <Button title="To F Page" onPress={() => navigation.navigate('FPage')} />
-            <Button title="To G Page" onPress={() => navigation.navigate('GPage')} />
+            <Button title="To F Page" onPress={navigate('/froute?user=anny')} />
+            <Button title="To G Page" onPress={navigate('/groute')} />
         </View>
     )
 }
 
-const EPage = ({ navigation }) => {
+const EPage = () => {
+    const navigate = useNavigate();
+
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
             <Text>
                 E Page Content
             </Text>
-            <Button title="To F Page" onPress={() => navigation.navigate('F Page')} />
-            <Button title="To G Page" onPress={() => navigation.navigate('G Page')} />
+            <Button title="To F Page" onPress={navigate('/froute')} />
+            <Button title="To G Page" onPress={navigate('/groute')} />
         </View>
     )
 }
@@ -59,11 +81,21 @@ const TabNavigator = () => {
     )
 }
 
-const FPage = () => {
+type CustomFPageRouteProps = RouteProp<RootStackParamList, 'FPage'>
+
+type FPageProps = {
+    route: CustomFPageRouteProps,
+}
+
+const FPage: React.FunctionComponent<FPageProps> = (props) => {
+
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
             <Text>
                 F Page Content
+            </Text>
+            <Text>
+                user: {props.route.params === undefined ? null : props.route.params.user}
             </Text>
         </View>
     )
@@ -89,14 +121,15 @@ const StackNavigator = () => {
     )
 }
 
-const HPage = (props) => {
-    const { navigation } = props
+const HPage = () => {
+    const navigate = useNavigate();
+
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
             <Text>
                 H Page Content
             </Text>
-            <Button title="Go to I Page" onPress={() => navigation.navigate('IPage', { itemID: null })} />
+            <Button title="Go to I Page" onPress={navigate('/iroute/33')} />
         </View>
     )
 }
@@ -109,9 +142,17 @@ const DrawerNavigator = () => {
     )
 }
 
-const IPage = (props) => {
-    const { route } = props;
-    const { itemID } = route.params;
+type CustomIPageNavigationProps = StackNavigationProp<RootStackParamList, 'IPage'>
+
+type CustomIPageRouteProps = RouteProp<RootStackParamList, 'IPage'>
+
+type IPageProps = {
+    navigation: CustomIPageNavigationProps,
+    route: CustomIPageRouteProps,
+}
+
+const IPage: React.FunctionComponent<IPageProps> = (props) => {
+    const { itemID } = props.route.params;
 
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -125,9 +166,9 @@ const IPage = (props) => {
     )
 }
 
-const LoginPage = (props) => {
-    const { navigation } = props;
+const LoginPage = () => {
     const { handleChange: handleUserChange } = useUser();
+    const navigate = useNavigate();
 
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
@@ -137,17 +178,26 @@ const LoginPage = (props) => {
             <Button title="Login" onPress={() => handleUserChange({ isAuthorized: true })} />
             <Button
                 title="Go to register page"
-                onPress={() => navigation.navigate('Register', {
-                    itemID: 46
-                })}
+                onPress={navigate(`/register/${44}`)}
             />
         </View>
     )
 }
 
-const RegisterPage = (props) => {
-    const { navigation, route } = props;
+type CustomRegisterNavigationProps = StackNavigationProp<RootStackParamList, 'Register'>
+
+type CustomRegisterRouteProps = RouteProp<RootStackParamList, 'Register'>
+
+type RegisterProps = {
+    navigation: CustomRegisterNavigationProps,
+    route: CustomRegisterRouteProps,
+}
+
+const RegisterPage: React.FunctionComponent<RegisterProps> = (props) => {
+    const { route } = props;
     const { itemID } = route.params;
+    const navigate = useNavigate();
+    
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
             <Text>
@@ -156,55 +206,14 @@ const RegisterPage = (props) => {
             <Text>
                 itemID: {itemID}
             </Text>
-            <Button title="Go to login page" onPress={() => navigation.navigate('Login')} />
+            <Button title="Go to login page" onPress={navigate('/loginroute')} />
         </View>
     )
+
 }
 
 const Router = () => {
     const { isAuthorized } = useUser();
-
-    const config: LinkingOptions['config'] = {
-        screens: {
-            Login: 'LoginPath',
-            Register: {
-                path: 'register/:itemID',
-                parse: {
-                    itemID: null
-                }
-            },
-            DrawerNavigator: {
-                screens: {
-                    StackNavgiator: {
-                        screens: {
-                            TabNavigator: {
-                                screens: {
-                                    CPage: 'CPath',
-                                    DPage: 'DPath',
-                                    EPage: 'EPath',
-                                }
-                            },
-                            FPage: 'FPath',
-                            GPage: 'GPath',
-                        }
-                    },
-                    HPage: 'HPath'
-                }
-
-            },
-            IPage: {
-                path: 'IPage/:itemID',
-                parse: {
-                    itemID: null,
-                }
-            },
-        }
-    }
-
-    const linking: LinkingOptions = {
-        prefixes: ['https://myproject.com', 'MyProject://'],
-        config: config,
-    }
 
     return (
         <NavigationContainer
